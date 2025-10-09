@@ -6,7 +6,8 @@ set +o allexport
 # Usage:
 # remote "<command>"
 remote() {
-  local command="source ~/.bash_profile && \
+  local command="source ~/.bash_profile >/dev/null 2>&1 && \
+    source ~/.bashrc >/dev/null 2>&1 && \
     $1"
   
   if [ -z "$REMOTE_HOST" ]; then
