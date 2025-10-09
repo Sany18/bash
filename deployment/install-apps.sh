@@ -1,4 +1,5 @@
-source ./deployment-commands.sh
+# Can be sourced from different scripts
+source ./deployment-commands.sh 2>/dev/null || true
 
 # Install Docker and Docker Compose (if not already installed)
 # Usage:
