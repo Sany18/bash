@@ -7,6 +7,9 @@ source ./deployment-commands.sh 2>/dev/null || true
 install_docker() {
   remote "command -v docker >/dev/null 2>&1 || \
     { curl -fsSL https://get.docker.com | sh && systemctl enable --now docker; }"
+}
+
+install_docker_compose() {
   remote "command -v docker-compose >/dev/null 2>&1 || \
     DOCKER_CONFIG=\${DOCKER_CONFIG:-\$HOME/.docker} && \
     mkdir -p \$DOCKER_CONFIG/cli-plugins && \

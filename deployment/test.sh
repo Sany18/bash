@@ -5,4 +5,5 @@ REMOTE_HOST=""
 
 # echo $(available ls)
 # install_docker
-install_nodejs 22
+# install_nodejs
+install_docker_compose
