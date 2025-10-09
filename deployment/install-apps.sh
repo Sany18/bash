@@ -9,13 +9,9 @@ install_docker() {
     { curl -fsSL https://get.docker.com | sh && systemctl enable --now docker; }"
 }
 
-install_docker_compose() {
-  remote "command -v docker-compose >/dev/null 2>&1 || \
-    DOCKER_CONFIG=\${DOCKER_CONFIG:-\$HOME/.docker} && \
-    mkdir -p \$DOCKER_CONFIG/cli-plugins && \
-    curl -SL https://github.com/docker/compose/releases/download/v2.40.0/docker-compose-linux-x86_64 -o \$DOCKER_CONFIG/cli-plugins/docker-compose && \
-    chmod +x \$DOCKER_CONFIG/cli-plugins/docker-compose"
-}
+# install_docker_compose() {
+#   remote "command -v docker compose >/dev/null 2>&1 || \
+# }
 
 # Version: v0.40.3
 # Usage:
