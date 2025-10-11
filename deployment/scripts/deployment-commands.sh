@@ -4,7 +4,7 @@
 remote() {
   local sources="~/.bashrc ~/.profile ~/.nvm/nvm.sh ~/.bash_profile"
   local applySources="for f in $sources; do [ -f \$f ] && source \$f > /dev/null 2>&1; done;"
-  local command="bash -lc '$applySources $1'"
+  local command="bash -lc '$applySources $@'"
   
   if [ -z "$REMOTE_HOST" ]; then
     bash -c "$command"
