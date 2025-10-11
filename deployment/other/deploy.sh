@@ -3,7 +3,6 @@
 # Current config uses rsync to deploy the project to the remote server.
 # The project is built on the remote server, and the backend server is
 # started in detached mode.
-
 set -o allexport
 source .env.local
 set +o allexport

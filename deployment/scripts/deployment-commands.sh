@@ -1,7 +1,3 @@
-set -o allexport
-source "${ENV_FILE:-.env}"
-set +o allexport
-
 # Execute a command on the remote server
 # Usage:
 # remote "<command>"
