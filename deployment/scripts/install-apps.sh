@@ -1,7 +1,7 @@
 # Can be sourced from different scripts
 source ./deployment-commands.sh 2>/dev/null || true
 
-local supressConnectionOutput="2>&1 | grep -v 'Connection to'"
+supressConnectionOutput="2>&1 | grep -v 'Connection to'"
 
 # Install Docker and Docker Compose (if not already installed)
 # Usage:
