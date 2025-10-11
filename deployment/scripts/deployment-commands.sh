@@ -17,10 +17,10 @@ remote() {
 
 # Upload files to remote server (with progress)
 # Usage:
-# upload_files <source> <destination>
+# upload_files <source> <destination> -- [additional rsync options]
 upload() {
   local source="$1"
   local destination="$2"
-  
-  rsync -av --progress -e "ssh -i $SSH_KEY" "$source" root@${REMOTE_HOST}:"$destination"
+  shift 2
+  rsync -av --progress -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination"
 }
