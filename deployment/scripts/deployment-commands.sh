@@ -1,3 +1,7 @@
+supressConnectionOutput() {
+  grep -v 'Connection to'
+}
+
 # Execute a command on the remote server
 # Usage:
 # remote "<command>"
@@ -7,11 +11,11 @@ remote() {
   local command="bash -lc '$applySources $@'"
   
   if [ -z "$REMOTE_HOST" ]; then
-    bash -c "$command"
+    bash -c "$command" | supressConnectionOutput
   elif [ -n "$SSH_KEY" ]; then
-    ssh -i "$SSH_KEY" -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command"
+    ssh -i "$SSH_KEY" -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" | supressConnectionOutput
   else
-    ssh -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command"
+    ssh -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" | supressConnectionOutput
   fi
 }
 

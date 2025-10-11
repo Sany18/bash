@@ -11,6 +11,10 @@ set +o allexport
 # Content from scripts/deployment-commands.sh
 # ============================================================================
 
+supressConnectionOutput() {
+  grep -v 'Connection to'
+}
+
 # Execute a command on the remote server
 # Usage:
 # remote "<command>"
@@ -20,11 +24,11 @@ remote() {
   local command="bash -lc '$applySources $@'"
   
   if [ -z "$REMOTE_HOST" ]; then
-    bash -c "$command"
+    bash -c "$command" | supressConnectionOutput
   elif [ -n "$SSH_KEY" ]; then
-    ssh -i "$SSH_KEY" -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command"
+    ssh -i "$SSH_KEY" -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" | supressConnectionOutput
   else
-    ssh -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command"
+    ssh -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" | supressConnectionOutput
   fi
 }
 
@@ -45,17 +49,12 @@ upload() {
 # Can be sourced from different scripts
 # source ./deployment-commands.sh
 
-supressConnectionOutput() {
-  grep -v 'Connection to'
-}
-
 # Install Docker and Docker Compose (if not already installed)
 # Usage:
 # install_docker
 install_docker() {
   remote "command -v docker >/dev/null 2>&1 || \
-    { curl -fsSL https://get.docker.com | sh && systemctl enable --now docker; };" \
-    | supressConnectionOutput
+    { curl -fsSL https://get.docker.com | sh && systemctl enable --now docker; };"
 }
 
 # install_docker_compose() {
@@ -67,8 +66,7 @@ install_docker() {
 # install_nvm
 install_nvm() {
   remote "command -v nvm >/dev/null 2>&1 || \
-    { curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source \$HOME/.bash_profile; };" \
-    | supressConnectionOutput
+    { curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source \$HOME/.bash_profile; };"
 }
 
 # Usage:
@@ -77,7 +75,7 @@ install_nodejs() {
   install_nvm
   local node_version="${1:-18}"
 
-  remote "nvm install $node_version || nvm use $node_version;" | supressConnectionOutput
+  remote "nvm install $node_version || nvm use $node_version;"
 }
 
   
