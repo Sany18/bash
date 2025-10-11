@@ -1,4 +1,4 @@
-source install-apps.sh
+source index.sh
 
 # Run locally
 REMOTE_HOST=""

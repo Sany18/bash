@@ -43,7 +43,7 @@ upload() {
 # ============================================================================
 
 # Can be sourced from different scripts
-source ./deployment-commands.sh 2>/dev/null || true
+# source ./deployment-commands.sh
 
 supressConnectionOutput="2>&1 | grep -v 'Connection to'"
 
@@ -52,8 +52,8 @@ supressConnectionOutput="2>&1 | grep -v 'Connection to'"
 # install_docker
 install_docker() {
   remote "command -v docker >/dev/null 2>&1 || \
-    { curl -fsSL https://get.docker.com | sh && systemctl enable --now docker; }; \
-    $supressConnectionOutput"
+    { curl -fsSL https://get.docker.com | sh && systemctl enable --now docker; };" \
+    $supressConnectionOutput
 }
 
 # install_docker_compose() {
@@ -65,8 +65,8 @@ install_docker() {
 # install_nvm
 install_nvm() {
   remote "command -v nvm >/dev/null 2>&1 || \
-    { curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source \$HOME/.bash_profile; }; \
-    $supressConnectionOutput"
+    { curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source \$HOME/.bash_profile; };" \
+    $supressConnectionOutput
 }
 
 # Usage:
@@ -75,8 +75,7 @@ install_nodejs() {
   install_nvm
   local node_version="${1:-18}"
 
-  remote "nvm install $node_version || nvm use $node_version; \
-  $supressConnectionOutput"
+  remote "nvm install $node_version || nvm use $node_version;" $supressConnectionOutput
 }
 
   
