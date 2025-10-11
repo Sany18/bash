@@ -11,9 +11,9 @@ remote() {
   if [ -z "$REMOTE_HOST" ]; then
     bash -c "$command"
   elif [ -n "$SSH_KEY" ]; then
-    ssh -i "$SSH_KEY" root@${REMOTE_HOST} "$command"
+    ssh -i "$SSH_KEY" -t root@${REMOTE_HOST} "$command"
   else
-    ssh root@${REMOTE_HOST} "$command"
+    ssh -t root@${REMOTE_HOST} "$command"
   fi
 }
 
