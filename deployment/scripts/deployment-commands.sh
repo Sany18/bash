@@ -17,7 +17,7 @@ remote() {
 
 # Upload files to remote server (with progress)
 # Usage:
-# upload_files <source> <destination> -- [additional rsync options]
+# upload <source> <destination> -- [additional rsync options]
 upload() {
   local source="$1"
   local destination="$2"
