@@ -35,8 +35,19 @@ upload() {
   local source="$1"
   local destination="$2"
   shift 2
-  rsync -av --progress -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination"
+  rsync -chavzP --stats -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination"
 }
+
+# Download files from remote server (with progress)
+# Usage:
+# download <source> <destination> -- [additional rsync options]
+download() {
+  local source="$1"
+  local destination="$2"
+  shift 2
+  rsync -chavzP --stats -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination"
+}
+
 # ============================================================================
 # Content from scripts/install-apps.sh
 # ============================================================================
