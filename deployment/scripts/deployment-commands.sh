@@ -9,9 +9,9 @@ remote() {
   if [ -z "$REMOTE_HOST" ]; then
     bash -c "$command" 2>&1 | grep -v 'Connection to'
   elif [ -n "$SSH_KEY" ]; then
-    ssh -i "$SSH_KEY" -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" 2>&1 | grep -v 'Connection to'
+    ssh -i "$SSH_KEY" ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" 2>&1 | grep -v 'Connection to'
   else
-    ssh -t ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" 2>&1 | grep -v 'Connection to'
+    ssh ${REMOTE_USER:-root}@${REMOTE_HOST} "$command" 2>&1 | grep -v 'Connection to'
   fi
 }
 
