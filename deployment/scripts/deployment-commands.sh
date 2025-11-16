@@ -4,7 +4,7 @@
 remote() {
   local sources="~/.bashrc ~/.profile ~/.nvm/nvm.sh ~/.bash_profile"
   local applySources="for f in $sources; do [ -f \$f ] && source \$f > /dev/null 2>&1; done;"
-  local command="bash -lc '$applySources $@'"
+  local command="bash -lc \"$applySources $@\""
   
   if [ -z "$REMOTE_HOST" ]; then
     bash -c "$command" 2>&1 | grep -v 'Connection to'
