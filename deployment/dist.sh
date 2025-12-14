@@ -35,7 +35,7 @@ upload() {
   local source="$1"
   local destination="$2"
   shift 2
-  rsync -avP --stats -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination"
+  rsync -a --info=progress2 --out-format="%n %l" -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination" 2>&1 | grep -v 'Connection to'
 }
 
 # Download files from remote server (with progress)
@@ -45,7 +45,7 @@ download() {
   local source="$1"
   local destination="$2"
   shift 2
-  rsync -avP --stats -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination"
+  rsync -a --info=progress2 --out-format="%n %l" -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination" 2>&1 | grep -v 'Connection to'
 }
 
 # ============================================================================
