@@ -11,25 +11,18 @@ set +o allexport
 # Content from scripts/deployment-commands.sh
 # ============================================================================
 
-# Check and install rclone if not present
-ensure_rclone() {
-  if ! command -v rclone &> /dev/null; then
-    echo "rclone not found. Installing..."
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      # macOS
-      if command -v brew &> /dev/null; then
-        brew install rclone
-      else
-        curl https://rclone.org/install.sh | sudo bash
-      fi
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-      # Linux
-      curl https://rclone.org/install.sh | sudo bash
+# Ensure rsync is installed
+ensure_rsync() {
+  if ! command -v rsync &> /dev/null; then
+    echo "rsync not found. Installing..."
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      sudo apt-get update && sudo apt-get install -y rsync
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+      brew install rsync
     else
-      echo "Unsupported OS. Please install rclone manually: https://rclone.org/install/"
-      return 1
+      echo "Please install rsync manually for your system"
+      exit 1
     fi
-    echo "rclone installed successfully."
   fi
 }
 
@@ -52,28 +45,31 @@ remote() {
 
 # Upload files to remote server (with progress)
 # Usage:
-# upload <source> <destination> -- [additional rclone options]
+# upload <source> <destination> -- [additional rsync options]
 upload() {
-  ensure_rclone
+  ensure_rsync
   local source="$1"
   local destination="$2"
   shift 2
 
-  rclone copy --log-level ERROR --stats-one-line --stats 1s --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" "$source" ":sftp:$destination" 2>&1 | grep -v 'Connection to'
+  rsync -az --info=progress2 --no-i-r -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination" 2>&1 | grep -E '^ +[0-9]|^ *$'
 }
 
 # Download files from remote server (with progress)
 # Usage:
-# download <source> <destination> -- [additional rclone options]
+# download <source> <destination> -- [additional rsync options]
 download() {
-  ensure_rclone
+  local source="$1"
+  local destination="$2"
+  shift 2
+  # choose progress option based on rsync support
+  if rsync --info=progress2 --version >/dev/null 2>&1; then
+  ensure_rsync
   local source="$1"
   local destination="$2"
   shift 2
 
-  rclone copy --log-level ERROR --stats-one-line --stats 1s --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" ":sftp:$source" "$destination" 2>&1 | grep -v 'Connection to'
-}
-
+  rsync -az --info=progress2 --no-i-r -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination" 2>&1 | grep -E '^ +[0-9]|^ *$
 # ============================================================================
 # Content from scripts/install-apps.sh
 # ============================================================================
