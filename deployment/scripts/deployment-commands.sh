@@ -46,7 +46,7 @@ upload() {
   local destination="$2"
   shift 2
 
-  rclone copy --stats-one-line --stats 1s --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" "$source" ":sftp:$destination" 2>&1 | grep -v 'Connection to'
+  rclone copy --log-level ERROR --stats-one-line --stats 1s --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" "$source" ":sftp:$destination" 2>&1 | grep -v 'Connection to'
 }
 
 # Download files from remote server (with progress)
@@ -58,5 +58,5 @@ download() {
   local destination="$2"
   shift 2
 
-  rclone copy --stats-one-line --stats 1s --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" ":sftp:$source" "$destination" 2>&1 | grep -v 'Connection to'
+  rclone copy --log-level ERROR --stats-one-line --stats 1s --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" ":sftp:$source" "$destination" 2>&1 | grep -v 'Connection to'
 }
