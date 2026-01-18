@@ -1,3 +1,25 @@
+# Check and install rclone if not present
+ensure_rclone() {
+  if ! command -v rclone &> /dev/null; then
+    echo "rclone not found. Installing..."
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      # macOS
+      if command -v brew &> /dev/null; then
+        brew install rclone
+      else
+        curl https://rclone.org/install.sh | sudo bash
+      fi
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      # Linux
+      curl https://rclone.org/install.sh | sudo bash
+    else
+      echo "Unsupported OS. Please install rclone manually: https://rclone.org/install/"
+      return 1
+    fi
+    echo "rclone installed successfully."
+  fi
+}
+
 # Execute a command on the remote server
 # Usage:
 # remote "<command>"
@@ -17,34 +39,24 @@ remote() {
 
 # Upload files to remote server (with progress)
 # Usage:
-# upload <source> <destination> -- [additional rsync options]
+# upload <source> <destination> -- [additional rclone options]
 upload() {
+  ensure_rclone
   local source="$1"
   local destination="$2"
   shift 2
-  # choose progress option based on rsync support
-  if rsync --info=progress2 --version >/dev/null 2>&1; then
-    RSYNC_PROGRESS_OPT="--info=progress2"
-  else
-    RSYNC_PROGRESS_OPT="--progress"
-  fi
 
-  rsync -a $RSYNC_PROGRESS_OPT --out-format="%n %l" -e "ssh -i $SSH_KEY" "$@" "$source" root@${REMOTE_HOST}:"$destination" 2>&1 | grep -v 'Connection to'
+  rclone copy --progress --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" "$source" ":sftp:$destination" 2>&1 | grep -v 'Connection to'
 }
 
 # Download files from remote server (with progress)
 # Usage:
-# download <source> <destination> -- [additional rsync options]
+# download <source> <destination> -- [additional rclone options]
 download() {
+  ensure_rclone
   local source="$1"
   local destination="$2"
   shift 2
-  # choose progress option based on rsync support
-  if rsync --info=progress2 --version >/dev/null 2>&1; then
-    RSYNC_PROGRESS_OPT="--info=progress2"
-  else
-    RSYNC_PROGRESS_OPT="--progress"
-  fi
 
-  rsync -a $RSYNC_PROGRESS_OPT --out-format="%n %l" -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination" 2>&1 | grep -v 'Connection to'
+  rclone copy --progress --sftp-host "${REMOTE_HOST}" --sftp-user "${REMOTE_USER:-root}" --sftp-key-file "$SSH_KEY" "$@" ":sftp:$source" "$destination" 2>&1 | grep -v 'Connection to'
 }
