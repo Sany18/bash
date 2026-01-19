@@ -51,10 +51,10 @@ download() {
   shift 2
   # choose progress option based on rsync support
   if rsync --info=progress2 --version >/dev/null 2>&1; then
-    RSYNC_PROGRESS_OPT="--info=progress2"
-  else
-    RSYNC_PROGRESS_OPT="--progress"
-  fi
+  ensure_rsync
+  local source="$1"
+  local destination="$2"
+  shift 2
 
-  rsync -a $RSYNC_PROGRESS_OPT --out-format="%n %l" -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination" 2>&1 | grep -v 'Connection to'
+  rsync -az --info=progress2 --no-i-r -e "ssh -i $SSH_KEY" "$@" root@${REMOTE_HOST}:"$source" "$destination" 2>&1 | grep -E '^ +[0-9]|^ *$'
 }
