@@ -46,11 +46,6 @@ upload() {
 # Usage:
 # download <source> <destination> -- [additional rsync options]
 download() {
-  local source="$1"
-  local destination="$2"
-  shift 2
-  # choose progress option based on rsync support
-  if rsync --info=progress2 --version >/dev/null 2>&1; then
   ensure_rsync
   local source="$1"
   local destination="$2"
